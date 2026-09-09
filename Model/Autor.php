@@ -7,7 +7,7 @@ class Autor {
     }
 
     public function listar() {
-    $query = "SELECT a.autor_id, a.nome, a.nacionalidade, a.biografia, l.livros_id, l.nome, l.genero, l.quantidade_paginas FROM autor a
+    $query = "SELECT * FROM autor a
               INNER JOIN livros l ON a.livros_id = l.livros_id";
     $stmt = $this->conn->prepare($query);
     $stmt->execute();
@@ -28,21 +28,21 @@ public function listarAutor($id) {
 }
 
     public function cadastrar($dados) {
-    $query = "INSERT INTO autor (livros_id, nome, nacionalidade, biografia) VALUES (:livros_id, :nome, :nacionalidade, :biografia)";
+    $query = "INSERT INTO autor (livros_id, nome_autor, nacionalidade_autor, biografia_autor) VALUES (:livros_id, :nome_autor, :nacionalidade_autor, :biografia_autor)";
     $stmt = $this->conn->prepare($query);
     $stmt->bindParam(':livros_id', $dados['livros_id']);
-    $stmt->bindParam(':nome', $dados['nome']);
-    $stmt->bindParam(':nacionalidade', $dados['nacionalidade']);
-    $stmt->bindParam(':biografia', $dados['biografia']);
+    $stmt->bindParam(':nome_autor', $dados['nome_autor']);
+    $stmt->bindParam(':nacionalidade_autor', $dados['nacionalidade_autor']);
+    $stmt->bindParam(':biografia_autor', $dados['biografia_autor']);
     return $stmt->execute();
 }
 
     public function atualizar($id, $dados) {
-        $query = "UPDATE autor SET tipo = :nome, nacionalidade = :nacionalidade, biografia WHERE autor_id = :id";
+        $query = "UPDATE autor SET tipo = :nome_autor, nacionalidade_autor = :nacionalidade_autor, biografia_autor WHERE autor_id = :id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':nome', $dados['nome']);
-        $stmt->bindParam(':nacionalidade', $dados['nacionalidade']);
-        $stmt->bindParam(':biografia', $dados['biografia']);
+        $stmt->bindParam(':nome_autor', $dados['nome_autor']);
+        $stmt->bindParam(':nacionalidade_autor', $dados['nacionalidade_autor']);
+        $stmt->bindParam(':biografia_autor', $dados['biografia_autor']);
         $stmt->bindParam(':id', $id);
 
         return $stmt->execute();

@@ -15,7 +15,7 @@ class Livros {
     }
 
     public function listarLivrosPorId($id) {
-    $queryLivros = "SELECT livro_id AS id, nome_livros, genero_livros, quantidade_paginas_livros FROM livros WHERE livros_id = :id";
+    $queryLivros = "SELECT livros_id AS id, nome_livros, genero_livros, quantidade_paginas_livros FROM livros WHERE livros_id = :id";
     $stmtLivros = $this->conn->prepare($queryLivros);
     $stmtLivros->bindParam(':id', $id);
     $stmtLivros->execute();
