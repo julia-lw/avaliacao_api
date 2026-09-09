@@ -15,7 +15,7 @@ class Livros {
     }
 
     public function listarLivrosPorId($id) {
-    $queryLivros = "SELECT livro_id AS id, nome, genero, quantidade_paginas FROM livros WHERE livros_id = :id";
+    $queryLivros = "SELECT livro_id AS id, nome_livros, genero_livros, quantidade_paginas_livros FROM livros WHERE livros_id = :id";
     $stmtLivros = $this->conn->prepare($queryLivros);
     $stmtLivros->bindParam(':id', $id);
     $stmtLivros->execute();
@@ -39,9 +39,9 @@ class Livros {
     public function cadastrar($dados) {
         $query = "INSERT INTO livros (nome_livros, genero_livros, quantidade_paginas_livros) VALUES (:nome_livros, :genero_livros, :quantidade_paginas_livros)";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':nome', $dados['nome']);
-        $stmt->bindParam(':genero', $dados['genero']);
-        $stmt->bindParam(':quantidade_paginas', $dados['quantidade_paginas']);
+        $stmt->bindParam(':nome_livros', $dados['nome_livros']);
+        $stmt->bindParam(':genero_livros', $dados['genero_livros']);
+        $stmt->bindParam(':quantidade_paginas_livros', $dados['quantidade_paginas_livros']);
 
         return $stmt->execute();
     }
@@ -49,9 +49,9 @@ class Livros {
     public function atualizar($id, $dados) {
         $query = "UPDATE livros SET nome = :nome, genero = :genero, quantidade_paginas = :quantidade_paginas WHERE id = :id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':nome', $dados['nome']);
-        $stmt->bindParam(':genero', $dados['genero']);
-        $stmt->bindParam(':quantidade_paginas', $dados['quantidade_paginas']);
+        $stmt->bindParam(':nome_livros', $dados['nome_livros']);
+        $stmt->bindParam(':genero_livros', $dados['genero_livros']);
+        $stmt->bindParam(':quantidade_paginas_livros', $dados['quantidade_paginas_livros']);
         $stmt->bindParam(':id', $id);
 
         return $stmt->execute();
