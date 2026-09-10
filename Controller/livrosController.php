@@ -1,4 +1,5 @@
 <?php
+
 class LivrosController {
     private $livrosModel;
 
@@ -24,26 +25,10 @@ class LivrosController {
                     echo json_encode(["erro" => "Erro ao cadastrar livro."]);
                 }
                 break;
-        }
-    }
-}
 
-            case 'PUT':
-                if ($id && $this->livrosModel->atualizar($id, $dados)) {
-                    echo json_encode(["mensagem" => "Livro atualizado com sucesso!"]);
-                } else {
-                    http_response_code(400);
-                    echo json_encode(["erro" => "ID não informado ou livro não encontrado."]);
-                }
-                break;
-
-            case 'DELETE':
-                if ($id && $this->livrosModel->deletar($id)) {
-                    echo json_encode(["mensagem" => "Livro deletado com sucesso!"]);
-                } else {
-                    http_response_code(400);
-                    echo json_encode(["erro" => "ID não informado."]);
-                }
+            default:
+                http_response_code(405);
+                echo json_encode(["mensagem" => "Método não permitido"]);
                 break;
         }
     }
