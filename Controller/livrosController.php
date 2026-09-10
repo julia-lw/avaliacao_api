@@ -13,8 +13,19 @@ class LivrosController {
 
         switch ($metodo) {
             case 'GET':
-                http_response_code(200);
-                echo json_encode($this->livrosModel->listar(), JSON_UNESCAPED_UNICODE);
+                if ($id) {
+                    $livro = $this->livrosModel->buscarPorId($id);
+                    if ($livro) {
+                        http_response_code(200);
+                        echo json_encode($livro, JSON_UNESCAPED_UNICODE);
+                    } else {
+                        http_response_code(404);
+                        echo json_encode(["mensagem" => "Livro não encontrado"]);
+                    }
+                } else {
+                    http_response_code(200);
+                    echo json_encode($this->livrosModel->listar(), JSON_UNESCAPED_UNICODE);
+                }
                 break;
 
             case 'POST':
