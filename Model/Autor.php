@@ -7,42 +7,38 @@ class Autor {
     }
 
     public function listar() {
-    $query = "SELECT * FROM autor a
-              INNER JOIN livros l ON a.livros_id = l.livros_id";
-    $stmt = $this->conn->prepare($query);
-    $stmt->execute();
+        $query = "SELECT * FROM autor";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-public function listarAutor($id) {
-    $query = "SELECT a.autor_id, a.nome, a.nacionalidade, a.biografia, l.livros_id, l.nome, l.genero, l.quantidade_paginas  
-              FROM autor a 
-              INNER JOIN livros l ON a.livros_id = l.livros_id 
-              WHERE a.autor_id = :id";
-    $stmt = $this->conn->prepare($query);
-    $stmt->bindParam(':id', $id);
-    $stmt->execute();
+    public function listarAutor($id) {
+        $query = "SELECT * FROM autor WHERE id_autor = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
 
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
     public function cadastrar($dados) {
-    $query = "INSERT INTO autor (livros_id, nome_autor, nacionalidade_autor, biografia_autor) VALUES (:livros_id, :nome_autor, :nacionalidade_autor, :biografia_autor)";
-    $stmt = $this->conn->prepare($query);
-    $stmt->bindParam(':livros_id', $dados['livros_id']);
-    $stmt->bindParam(':nome_autor', $dados['nome_autor']);
-    $stmt->bindParam(':nacionalidade_autor', $dados['nacionalidade_autor']);
-    $stmt->bindParam(':biografia_autor', $dados['biografia_autor']);
-    return $stmt->execute();
-}
+        $query = "INSERT INTO autor (nome, nacionalidade, biografia) 
+                  VALUES (:nome, :nacionalidade, :biografia)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':nome', $dados['nome']);
+        $stmt->bindParam(':nacionalidade', $dados['nacionalidade']);
+        $stmt->bindParam(':biografia', $dados['biografia']);
+        return $stmt->execute();
+    }
 
     public function atualizar($id, $dados) {
-        $query = "UPDATE autor SET tipo = :nome_autor, nacionalidade_autor = :nacionalidade_autor, biografia_autor WHERE autor_id = :id";
+        $query = "UPDATE autor SET nome = :nome, nacionalidade = :nacionalidade, biografia = :biografia WHERE id_autor = :id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':nome_autor', $dados['nome_autor']);
-        $stmt->bindParam(':nacionalidade_autor', $dados['nacionalidade_autor']);
-        $stmt->bindParam(':biografia_autor', $dados['biografia_autor']);
+        $stmt->bindParam(':nome', $dados['nome']);
+        $stmt->bindParam(':nacionalidade', $dados['nacionalidade']);
+        $stmt->bindParam(':biografia', $dados['biografia']);
         $stmt->bindParam(':id', $id);
 
         return $stmt->execute();
@@ -53,7 +49,7 @@ public function listarAutor($id) {
         foreach ($dados as $chave => $valor) {
             $campos[] = "$chave = :$chave";
         }
-        $query = "UPDATE autor SET " . implode(', ', $campos) . " WHERE autor_id = :id";
+        $query = "UPDATE autor SET " . implode(', ', $campos) . " WHERE id_autor = :id";
         
         $stmt = $this->conn->prepare($query);
         foreach ($dados as $chave => $valor) {
@@ -65,7 +61,7 @@ public function listarAutor($id) {
     }
 
     public function deletar($id) {
-        $query = "DELETE FROM autor WHERE autor_id = :id";
+        $query = "DELETE FROM autor WHERE id_autor = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
 

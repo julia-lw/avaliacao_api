@@ -7,7 +7,7 @@ class Livros {
     }
 
     public function listar() {
-        $query = "SELECT l.id_livros, l.nome_livros, l.genero_livros, l.quantidade_paginas_livros, a.id_autor, a.nome AS autor_nome, a.nacionalidade, a.biografia 
+        $query = "SELECT l.id_livros, l.nome_livros, l.genero_livros, l.quantidade_paginas_livros, a.id_autor, a.nome AS nome_autor, a.nacionalidade, a.biografia 
         FROM livros l
         INNER JOIN autor a ON l.Autor_id_autor = a.id_autor";
 
@@ -24,7 +24,7 @@ class Livros {
                 "quantidade_paginas_livros" => (int)$linha['quantidade_paginas_livros'],
                 "autor" => [
                     "id_autor" => (int)$linha['id_autor'],
-                    "nome" => $linha['autor_nome'],
+                    "nome" => $linha['nome_autor'],
                     "nacionalidade" => $linha['nacionalidade'],
                     "biografia" => $linha['biografia']
                 ]
