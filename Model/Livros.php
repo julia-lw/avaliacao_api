@@ -7,34 +7,31 @@ class Livros {
     }
 
     public function listar() {
-        $query = "SELECT * FROM livros";
+        $query = "SELECT l.id_livros, l.nome_livros, l.genero_livros, l.quantidade_paginas_livros, a.id_autor, a.nome, a.nacionalidade, a.biografia 
+        FROM livros l
+        INNER JOIN autor a ON l.Autor_id_autor = a.id_autor";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function listarLivrosPorId($id) {
-    $queryLivros = "SELECT livros_id AS id, nome_livros, genero_livros, quantidade_paginas_livros FROM livros WHERE livros_id = :id";
-    $stmtLivros = $this->conn->prepare($queryLivros);
-    $stmtLivros->bindParam(':id', $id);
-    $stmtLivros->execute();
-    $livros = $stmtLivros->fetch(PDO::FETCH_ASSOC);
-
-    if (!$livros) {
-        return false;
+    $livros = [];
+        foreach ($resultados as $linha) {
+            $livros[] = [
+                "id_livros" => $linha['id_livros'],
+                "nome_livros" => $linha['nome_livros'],
+                "genero_livros" => $linha['genero_livros'],
+                "quantidade_paginas" => $linha['quantidade_paginas_livros'],
+                "autor" => [
+                    "id_autor" => $linha['id_autor'],
+                    "nome" => $linha['nome'],
+                    "nacionalidade" => $linha['nacionalidade']
+                    "biografia" => $linha['biografia']
+                ]
+            ];
+        }
+        return $livros;
     }
-
-    $queryAutor = "SELECT autor_id AS id, livros_id, nome_autor, nacionalidade_autor FROM autor WHERE livros_id = :id";
-    $stmtAutor = $this->conn->prepare($queryAutor);
-    $stmtAutor->bindParam(':id', $id);
-    $stmtAutor->execute();
-    $autor = $stmtAutor->fetchAll(PDO::FETCH_ASSOC);
-
-    $livros['autor'] = $autor;
-
-    return $livros;
-}
 
     public function cadastrar($dados) {
         $query = "INSERT INTO livros (nome_livros, genero_livros, quantidade_paginas_livros) VALUES (:nome_livros, :genero_livros, :quantidade_paginas_livros)";
