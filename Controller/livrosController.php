@@ -8,42 +8,80 @@ class LivrosController {
     }
 
     public function processarRequisicao($metodo) {
-        $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+        $id = isset($_GET['id_livros']) ? (int)$_GET['id_livros'] : (isset($_GET['id']) ? (int)$_GET['id'] : null);
+        $dados = json_decode(file_get_contents("php://input"), true);
 
         switch ($metodo) {
             case 'GET':
                 if ($id) {
-                    $this->listarLivros($id);
+                    $livro = $this->livrosModel->buscarPorId($id);
+                    if ($livro) {
+                        http_response_code(200);
+                        echo json_encode($livro, JSON_UNESCAPED_UNICODE);
+                    } else {
+                        http_response_code(404);
+                        echo json_encode(["mensagem" => "Livro não encontrado"]);
+                    }
                 } else {
-                    $this->listarTodos();
+                    http_response_code(200);
+                    echo json_encode($this->livrosModel->listar(), JSON_UNESCAPED_UNICODE);
                 }
                 break;
 
             case 'POST':
-                $this->cadastrar();
+                if (!empty($dados['nome_livros']) && !empty($dados['Autor_id_autor'])) {
+                    if ($this->livrosModel->cadastrar($dados)) {
+                        http_response_code(201);
+                        echo json_encode(["mensagem" => "Livro cadastrado com sucesso!"]);
+                    } else {
+                        http_response_code(500);
+                        echo json_encode(["erro" => "Erro ao cadastrar livro."]);
+                    }
+                } else {
+                    http_response_code(400);
+                    echo json_encode(["mensagem" => "Dados incompletos"]);
+                }
                 break;
 
             case 'PUT':
-                if ($id) {
-                    $this->atualizarCompleto($id);
+                if ($id && !empty($dados['nome_livros'])) {
+                    if ($this->livrosModel->atualizar($id, $dados)) {
+                        http_response_code(200);
+                        echo json_encode(["mensagem" => "Livro atualizado com sucesso!"]);
+                    } else {
+                        http_response_code(500);
+                        echo json_encode(["erro" => "Erro ao atualizar livro."]);
+                    }
                 } else {
                     http_response_code(400);
-                    echo json_encode(["mensagem" => "ID é obrigatório para atualização completa"]);
+                    echo json_encode(["mensagem" => "ID e dados completos são obrigatórios"]);
                 }
                 break;
 
             case 'PATCH':
-                if ($id) {
-                    $this->atualizarParcial($id);
+                if ($id && !empty($dados)) {
+                    if ($this->livrosModel->atualizarParcial($id, $dados)) {
+                        http_response_code(200);
+                        echo json_encode(["mensagem" => "Livro atualizado parcialmente!"]);
+                    } else {
+                        http_response_code(500);
+                        echo json_encode(["erro" => "Erro na atualização parcial."]);
+                    }
                 } else {
                     http_response_code(400);
-                    echo json_encode(["mensagem" => "ID é obrigatório para atualização parcial"]);
+                    echo json_encode(["mensagem" => "ID e ao menos um campo são obrigatórios"]);
                 }
                 break;
 
             case 'DELETE':
                 if ($id) {
-                    $this->deletar($id);
+                    if ($this->livrosModel->deletar($id)) {
+                        http_response_code(200);
+                        echo json_encode(["mensagem" => "Livro removido com sucesso!"]);
+                    } else {
+                        http_response_code(500);
+                        echo json_encode(["erro" => "Erro ao remover livro."]);
+                    }
                 } else {
                     http_response_code(400);
                     echo json_encode(["mensagem" => "ID é obrigatório para exclusão"]);
@@ -52,89 +90,8 @@ class LivrosController {
 
             default:
                 http_response_code(405);
-                echo json_encode(['mensagem' => 'Método não permitido']);
+                echo json_encode(["mensagem" => "Método não permitido"]);
                 break;
-        }
-    }
-
-    public function listarTodos() {
-        http_response_code(200);
-        echo json_encode($this->livrosModel->listar());
-    }
-
-    public function listarLivros($id) {
-        $livros = $this->livrosModel->listarLivrosporId($id);
-
-        if ($livros) {
-            http_response_code(200);
-            echo json_encode($livros);
-        } else {
-            http_response_code(404);
-            echo json_encode(["mensagem" => "Livro não encontrado"]);
-        }
-    }
-
-    public function cadastrar() {
-        $dados = json_decode(file_get_contents("php://input"), true);
-
-        if (empty($dados['nome']) || empty($dados['genero']) || empty($dados['quantidade_paginas'])) {
-            http_response_code(400);
-            echo json_encode(["mensagem" => "Dados incompletos"]);
-            return;
-        }
-
-        if ($this->livrosModel->cadastrar($dados)) {
-            http_response_code(201);
-            echo json_encode(["mensagem" => "Livro cadastrado"]);
-        } else {
-            http_response_code(500);
-            echo json_encode(['mensagem' => "Erro ao cadastrar"]);
-        }
-    }
-
-    public function atualizarCompleto($id) {
-        $dados = json_decode(file_get_contents("php://input"), true);
-
-        if (empty($dados['nome']) || empty($dados['genero']) || empty($dados['quantidade_paginas'])) {
-            http_response_code(400);
-            echo json_encode(["mensagem" => "Dados incompletos para atualização completa (PUT)"]);
-            return;
-        }
-
-        if ($this->livrosModel->atualizar($id, $dados)) {
-            http_response_code(200);
-            echo json_encode(["mensagem" => "Livro atualizado com sucesso"]);
-        } else {
-            http_response_code(500);
-            echo json_encode(["mensagem" => "Erro ao atualizar livro"]);
-        }
-    }
-
-    public function atualizarParcial($id) {
-        $dados = json_decode(file_get_contents("php://input"), true);
-
-        if (empty($dados)) {
-            http_response_code(400);
-            echo json_encode(["mensagem" => "Nenhum dado fornecido para atualização"]);
-            return;
-        }
-
-        if ($this->livrosModel->atualizarParcial($id, $dados)) {
-            http_response_code(200);
-            echo json_encode(["mensagem" => "Livro atualizado parcialmente com sucesso"]);
-        } else {
-            http_response_code(500);
-            echo json_encode(["mensagem" => "Erro ao atualizar parcialmente o livro"]);
-        }
-    }
-
-    public function deletar($id) {
-        if ($this->livrosModel->deletar($id)) {
-            http_response_code(200);
-            echo json_encode(["mensagem" => "Livro removido com sucesso"]);
-        } else {
-            http_response_code(500);
-            echo json_encode(["mensagem" => "Erro ao remover o livro"]);
         }
     }
 }
