@@ -8,7 +8,7 @@ class AutorController {
     }
 
     public function processarRequisicao($metodo) {
-        $id = isset($_GET['autor_id']) ? (int)$_GET['autor_id'] : (isset($_GET['id']) ? (int)$_GET['id'] : null);
+        $id = isset($_GET['id_autor']) ? (int)$_GET['id_autor'] : (isset($_GET['id']) ? (int)$_GET['id'] : null);
 
         switch ($metodo) {
             case 'GET':
