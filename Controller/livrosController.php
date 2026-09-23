@@ -3,11 +3,7 @@
 class LivrosController {
     private $livrosModel;
     private function autorExiste($id_autor) {
-        $query = "SELECT id_autor FROM autor WHERE id_autor = :id";
-        $stmt = $this->livrosModel->getConn()->prepare($query);
-        $stmt->bindParam(':id', $id_autor);
-        $stmt->execute();
-        return $stmt->fetch() !== false;
+        return $this->livrosModel->autorExiste($id_autor);
     }
 
     public function __construct($livrosModel) {

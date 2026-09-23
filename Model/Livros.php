@@ -6,6 +6,15 @@ class Livros {
         $this->conn = $db;
     }
 
+    public function autorExiste($id_autor) {
+        $query = "SELECT id_autor FROM autor WHERE id_autor = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id_autor);
+        $stmt->execute();
+
+        return $stmt->fetch() !== false;
+    }
+
     public function listar() {
         $query = "SELECT l.id_livros, l.nome_livros, l.genero_livros, l.quantidade_paginas_livros, 
                          a.id_autor, a.nome AS nome_autor, a.nacionalidade, a.biografia 
