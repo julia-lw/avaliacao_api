@@ -44,38 +44,57 @@ class LivrosController {
                 break;
 
             case 'PUT':
-                if ($id && !empty($dados['nome_livros'])) {
-                    if ($this->livrosModel->atualizar($id, $dados)) {
-                        http_response_code(200);
-                        echo json_encode(["mensagem" => "Livro atualizado com sucesso!"]);
+                if ($id) {
+                    if (!$this->livrosModel->buscarPorId($id)) {
+                        http_response_code(404);
+                        echo json_encode(["mensagem" => "Livro não encontrado"]);
+                    } elseif (!empty($dados['nome_livros'])) {
+                        if ($this->livrosModel->atualizar($id, $dados)) {
+                            http_response_code(200);
+                            echo json_encode(["mensagem" => "Livro atualizado com sucesso!"]);
+                        } else {
+                            http_response_code(500);
+                            echo json_encode(["erro" => "Erro ao atualizar livro."]);
+                        }
                     } else {
-                        http_response_code(500);
-                        echo json_encode(["erro" => "Erro ao atualizar livro."]);
+                        http_response_code(400);
+                        echo json_encode(["mensagem" => "Dados incompletos"]);
                     }
                 } else {
                     http_response_code(400);
-                    echo json_encode(["mensagem" => "ID e dados completos são obrigatórios"]);
+                    echo json_encode(["mensagem" => "ID é obrigatório"]);
                 }
                 break;
 
             case 'PATCH':
-                if ($id && !empty($dados)) {
-                    if ($this->livrosModel->atualizarParcial($id, $dados)) {
-                        http_response_code(200);
-                        echo json_encode(["mensagem" => "Livro atualizado parcialmente!"]);
+                if ($id) {
+                    if (!$this->livrosModel->buscarPorId($id)) {
+                        http_response_code(404);
+                        echo json_encode(["mensagem" => "Livro não encontrado"]);
+                    } elseif (!empty($dados)) {
+                        if ($this->livrosModel->atualizarParcial($id, $dados)) {
+                            http_response_code(200);
+                            echo json_encode(["mensagem" => "Livro atualizado parcialmente!"]);
+                        } else {
+                            http_response_code(500);
+                            echo json_encode(["erro" => "Erro na atualização parcial."]);
+                        }
                     } else {
-                        http_response_code(500);
-                        echo json_encode(["erro" => "Erro na atualização parcial."]);
+                        http_response_code(400);
+                        echo json_encode(["mensagem" => "Ao menos um campo é obrigatório"]);
                     }
                 } else {
                     http_response_code(400);
-                    echo json_encode(["mensagem" => "ID e ao menos um campo são obrigatórios"]);
+                    echo json_encode(["mensagem" => "ID é obrigatório"]);
                 }
                 break;
 
             case 'DELETE':
                 if ($id) {
-                    if ($this->livrosModel->deletar($id)) {
+                    if (!$this->livrosModel->buscarPorId($id)) {
+                        http_response_code(404);
+                        echo json_encode(["mensagem" => "Livro não encontrado"]);
+                    } elseif ($this->livrosModel->deletar($id)) {
                         http_response_code(200);
                         echo json_encode(["mensagem" => "Livro removido com sucesso!"]);
                     } else {
@@ -87,11 +106,6 @@ class LivrosController {
                     echo json_encode(["mensagem" => "ID é obrigatório para exclusão"]);
                 }
                 break;
-
-            default:
-                http_response_code(405);
-                echo json_encode(["mensagem" => "Método não permitido"]);
-                break;
+            }
         }
     }
-}

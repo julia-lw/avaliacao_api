@@ -155,3 +155,4 @@ class AutorController {
             echo json_encode(["mensagem" => "Erro ao remover o autor"]);
         }
     }
+}
