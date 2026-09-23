@@ -43,26 +43,33 @@ class LivrosController {
                 }
                 break;
 
-            case 'PUT':
-                if ($id) {
+                case 'PUT':
+                if ($id && !empty($dados['nome_livros'])) {
                     if (!$this->livrosModel->buscarPorId($id)) {
                         http_response_code(404);
                         echo json_encode(["mensagem" => "Livro não encontrado"]);
-                    } elseif (!empty($dados['nome_livros'])) {
-                        if ($this->livrosModel->atualizar($id, $dados)) {
-                            http_response_code(200);
-                            echo json_encode(["mensagem" => "Livro atualizado com sucesso!"]);
-                        } else {
-                            http_response_code(500);
-                            echo json_encode(["erro" => "Erro ao atualizar livro."]);
+                        return;
+                    }
+
+                    if (isset($dados['Autor_id_autor'])) {
+                        $autorExiste = $this->autorExiste($dados['Autor_id_autor']);
+                        if (!$autorExiste) {
+                            http_response_code(400);
+                            echo json_encode(["mensagem" => "O autor informado não existe"]);
+                            return;
                         }
+                    }
+
+                    if ($this->livrosModel->atualizar($id, $dados)) {
+                        http_response_code(200);
+                        echo json_encode(["mensagem" => "Livro atualizado com sucesso!"]);
                     } else {
-                        http_response_code(400);
-                        echo json_encode(["mensagem" => "Dados incompletos"]);
+                        http_response_code(500);
+                        echo json_encode(["erro" => "Erro ao atualizar livro."]);
                     }
                 } else {
                     http_response_code(400);
-                    echo json_encode(["mensagem" => "ID é obrigatório"]);
+                    echo json_encode(["mensagem" => "ID e dados completos são obrigatórios"]);
                 }
                 break;
 
