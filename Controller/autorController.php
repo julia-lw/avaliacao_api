@@ -93,6 +93,12 @@ class AutorController {
     }
 
     public function atualizarCompleto($id) {
+        if (!$this->autorModel->listarAutor($id)) {
+            http_response_code(404);
+            echo json_encode(["mensagem" => "Autor não encontrado"]);
+            return;
+        }
+
         $dados = json_decode(file_get_contents("php://input"), true);
 
         if (empty($dados['nome']) || empty($dados['nacionalidade']) || empty($dados['biografia'])) {
@@ -111,6 +117,12 @@ class AutorController {
     }
 
     public function atualizarParcial($id) {
+        if (!$this->autorModel->listarAutor($id)) {
+            http_response_code(404);
+            echo json_encode(["mensagem" => "Autor não encontrado"]);
+            return;
+        }
+
         $dados = json_decode(file_get_contents("php://input"), true);
 
         if (empty($dados)) {
@@ -129,6 +141,12 @@ class AutorController {
     }
 
     public function deletar($id) {
+        if (!$this->autorModel->listarAutor($id)) {
+            http_response_code(404);
+            echo json_encode(["mensagem" => "Autor não encontrado"]);
+            return;
+        }
+
         if ($this->autorModel->deletar($id)) {
             http_response_code(200);
             echo json_encode(["mensagem" => "Autor removido com sucesso"]);
@@ -137,4 +155,3 @@ class AutorController {
             echo json_encode(["mensagem" => "Erro ao remover o autor"]);
         }
     }
-}
