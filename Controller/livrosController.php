@@ -77,25 +77,32 @@ class LivrosController {
                 break;
 
             case 'PATCH':
-                if ($id) {
+                if ($id && !empty($dados['nome_livros'])) {
                     if (!$this->livrosModel->buscarPorId($id)) {
                         http_response_code(404);
                         echo json_encode(["mensagem" => "Livro não encontrado"]);
-                    } elseif (!empty($dados)) {
-                        if ($this->livrosModel->atualizarParcial($id, $dados)) {
-                            http_response_code(200);
-                            echo json_encode(["mensagem" => "Livro atualizado parcialmente!"]);
-                        } else {
-                            http_response_code(500);
-                            echo json_encode(["erro" => "Erro na atualização parcial."]);
+                        return;
+                    }
+
+                    if (isset($dados['Autor_id_autor'])) {
+                        $autorExiste = $this->autorExiste($dados['Autor_id_autor']);
+                        if (!$autorExiste) {
+                            http_response_code(400);
+                            echo json_encode(["mensagem" => "O autor informado não existe"]);
+                            return;
                         }
+                    }
+
+                    if ($this->livrosModel->atualizar($id, $dados)) {
+                        http_response_code(200);
+                        echo json_encode(["mensagem" => "Livro atualizado parcialmente com sucesso!"]);
                     } else {
-                        http_response_code(400);
-                        echo json_encode(["mensagem" => "Ao menos um campo é obrigatório"]);
+                        http_response_code(500);
+                        echo json_encode(["erro" => "Erro ao atualizar livro parcialmente."]);
                     }
                 } else {
                     http_response_code(400);
-                    echo json_encode(["mensagem" => "ID é obrigatório"]);
+                    echo json_encode(["mensagem" => "ID e dados completos são obrigatórios"]);
                 }
                 break;
 
